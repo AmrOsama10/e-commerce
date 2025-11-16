@@ -1,8 +1,21 @@
-export * from './admin/admin.schema.js';
-export * from './admin/admin.repository.js';
+export * from './admin/admin.schema';
+export * from './admin/admin.repository';
 
-export * from './customer/customer.repository.js';
-export * from './customer/customer.schema.js';
+export * from './customer/customer.repository';
+export * from './customer/customer.schema';
 
-export * from './seller/seller.repository.js';
-export * from './seller/seller.schema.js';
+export * from './seller/seller.repository';
+export * from './seller/seller.schema';
+
+export * from './category/category.repository';
+export * from './category/category.schema';
+
+export * from './brand/brand.repository';
+export * from './brand/brand.schema';
+
+export * from './product/product.repository';
+export * from './product/product.schema';
+
+export * from './common/index';
+
+

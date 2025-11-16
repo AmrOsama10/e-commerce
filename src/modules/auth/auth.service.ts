@@ -2,10 +2,12 @@ import {
   checkOtp,
   generateOtp,
   generateOtpExpiry,
+  MESSAGE,
   sendEmail,
 } from '@common/index';
-import { CustomerRepository } from '@models/index';
+import { CustomerRepository, UserRepository } from '@models/index';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -18,19 +20,23 @@ import { IsVerifyDTO } from './dto/IsVerify.dto.js';
 import { LoginDTO } from './dto/login.dto.js';
 import { Customer } from './entities/auth.entity.js';
 import { ForgetPasswordDTO } from './dto/forget-password.dto';
+import { OAuth2Client } from 'google-auth-library';
+import { AuthFactoryService } from './factory/index.js';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly customerRepository: CustomerRepository,
+    private readonly userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly authFactoryService: AuthFactoryService,
   ) {}
   async register(customer: Customer) {
     const customerExist = await this.customerRepository.getOne({
       email: customer.email,
     });
-    if (customerExist) throw new ConflictException('user already exist');
+    if (customerExist) throw new ConflictException(MESSAGE.User.alreadyExist);
 
     await sendEmail({
       to: customer.email,
@@ -48,21 +54,21 @@ export class AuthService {
   }
 
   async login(loginDTO: LoginDTO) {
-    const customerExist = await this.customerRepository.getOne({
+    const userExist = await this.userRepository.getOne({
       email: loginDTO.email,
     });
     const match = await bcrypt.compare(
       loginDTO.password,
-      customerExist?.password || '',
+      userExist?.password || '',
     );
-    if (!customerExist) {
+    if (!userExist) {
       throw new UnauthorizedException('invalid credentials');
     }
     if (!match) {
       throw new UnauthorizedException('invalid credentials');
     }
     const token = await this.jwtService.signAsync(
-      { _id: customerExist._id, email: customerExist.email, role: 'Customer' },
+      { _id: userExist._id, email: userExist.email, role: 'Customer' },
       { expiresIn: '1h', secret: this.configService.get('access').jwt_secret },
     );
     return token;
@@ -72,7 +78,7 @@ export class AuthService {
     const userExist = await this.customerRepository.getOne({
       email: isVerifyDTO.email,
     });
-    if (!userExist) throw new NotFoundException('user not found');
+    if (!userExist) throw new NotFoundException(MESSAGE.User.notFound);
     await checkOtp(userExist, isVerifyDTO);
 
     const userUpdated = await this.customerRepository.update(
@@ -86,7 +92,7 @@ export class AuthService {
     const userExist = await this.customerRepository.getOne({
       email,
     });
-    if (!userExist) throw new NotFoundException('user not found');
+    if (!userExist) throw new NotFoundException(MESSAGE.User.notFound);
     const otp = generateOtp();
     const otpExpiry = generateOtpExpiry();
     await sendEmail({
@@ -104,7 +110,7 @@ export class AuthService {
     const userExist = await this.customerRepository.getOne({
       email: forgetPasswordDTO.email,
     });
-    if (!userExist) throw new NotFoundException('user not found');
+    if (!userExist) throw new NotFoundException(MESSAGE.User.notFound);
 
     await checkOtp(userExist, forgetPasswordDTO);
     this.customerRepository.update(
@@ -116,5 +122,26 @@ export class AuthService {
       },
     );
     return userExist;
+  }
+
+  async googleLogin(idToken: string) {
+    const clint = new OAuth2Client(
+      this.configService.get('access').googleClintId,
+    );
+    const ticket = await clint.verifyIdToken({ idToken });
+    const payload = ticket.getPayload();
+    if (!payload) throw new BadRequestException('invalid google token');
+    const userExist = await this.userRepository.getOne({
+      email: payload.email,
+    });
+
+    if (!userExist) {
+      const user = await this.authFactoryService.googleLogin(
+        payload.name as string,
+        payload.email as string,
+      );
+      const createdUser = await this.userRepository.create(user);
+      return createdUser;
+    }
   }
 }

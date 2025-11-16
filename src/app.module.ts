@@ -7,6 +7,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProductModule } from './modules/product/product.module';
 import { CustomerModule } from './modules/customer/customer.module';
+import { CategoryModule } from './modules/category/category.module';
+import { BrandModule } from './modules/brand/brand.module';
+import { CommonModule } from '@shared/modules';
 
 
 @Module({
@@ -23,7 +26,10 @@ import { CustomerModule } from './modules/customer/customer.module';
     }),
     AuthModule,
     ProductModule,
-    CustomerModule
+    CustomerModule,
+    CategoryModule,
+    BrandModule,
+    CommonModule
   ],
   controllers: [AppController],
   providers: [AppService],

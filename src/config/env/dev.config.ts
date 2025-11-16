@@ -5,5 +5,7 @@ export default () => ({
   },
   access: {
     jwt_secret: process.env.JWT_SECRET,
+    googleClintID: process.env.GOOGLE_CLIENT_ID,
+    googleClintSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
 });

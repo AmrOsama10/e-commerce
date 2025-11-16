@@ -1,21 +1,21 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, userSchema } from '../../models/common/user.schema.js';
 import {
-    Admin,
-    AdminRepository,
-    adminSchema,
-    Customer,
-    CustomerRepository,
-    CustomerSchema,
-    Seller,
-    SellerRepository,
-    SellerSchema,
+  Admin,
+  AdminRepository,
+  adminSchema,
+  Customer,
+  CustomerRepository,
+  CustomerSchema,
+  Seller,
+  SellerRepository,
+  SellerSchema,
 } from '../../models';
+import { User, UserRepository, userSchema } from '@models/common';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
+  MongooseModule.forFeature([
       {
         name: User.name,
         schema: userSchema,
@@ -32,12 +32,23 @@ import {
             name: Seller.name,
             schema: SellerSchema,
           },
+          { name: User.name, schema: userSchema },
         ],
       },
     ]),
   ],
   controllers: [],
-  providers: [CustomerRepository, AdminRepository, SellerRepository],
-  exports: [CustomerRepository, AdminRepository, SellerRepository],
+  providers: [
+    CustomerRepository,
+    AdminRepository,
+    SellerRepository,
+    UserRepository,
+  ],
+  exports: [
+    CustomerRepository,
+    AdminRepository,
+    SellerRepository,
+    UserRepository,
+  ],
 })
 export class UserModule {}

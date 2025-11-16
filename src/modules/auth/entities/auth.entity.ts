@@ -9,4 +9,12 @@ export class Customer {
     otp:string;
     otpExpiry:Date;
     isVerified:boolean
+    userAgent:USER_AGENT
+}
+
+
+
+export enum USER_AGENT {
+  local,
+  google
 }

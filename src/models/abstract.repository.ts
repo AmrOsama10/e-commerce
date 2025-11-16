@@ -17,8 +17,8 @@ export class AbstractRepository<T> {
   async update(
     filter: RootFilterQuery<T>,
     update: UpdateQuery<T>,
-    options?: MongooseUpdateQueryOptions,
+    options?: QueryOptions,
   ) {
-    return this.model.updateOne(filter, update, options);
+    return this.model.findOneAndUpdate(filter, update, options);
   }
 }

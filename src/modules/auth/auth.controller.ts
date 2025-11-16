@@ -64,4 +64,14 @@ export class AuthController {
       success: true,
     };
   }
+
+  @Post('/google-login')
+  async googleLogin (@Body('idToken') idToken:string){
+    const createdCustomer = await this.authService.googleLogin(idToken);
+     return {
+       message: 'user created successfully',
+       success: true,
+       data: { createdCustomer },
+     };
+  }
 }
