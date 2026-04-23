@@ -10,7 +10,7 @@ import { Types } from 'mongoose';
 
 @Injectable()
 export class BrandService {
-  constructor(private readonly brandRepository: BrandRepository) {}
+  constructor(private readonly brandRepository: BrandRepository) { }
   async create(brand: Brand) {
     const brandExist = await this.brandRepository.getOne({ slug: brand.slug });
 
@@ -19,8 +19,8 @@ export class BrandService {
     return await this.brandRepository.create(brand);
   }
 
-  findAll() {
-    return `This action returns all brand`;
+  async findAll() {
+    return await this.brandRepository.getAll();
   }
 
   async findOne(id: string | Types.ObjectId) {
@@ -50,7 +50,9 @@ export class BrandService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} brand`;
+  async remove(id: string) {
+    const brand = await this.brandRepository.delete({ _id: id });
+    if (!brand) throw new NotFoundException(MESSAGE.Brand.notFound);
+    return brand;
   }
 }

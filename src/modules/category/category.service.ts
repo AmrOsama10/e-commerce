@@ -10,7 +10,7 @@ import { Types } from 'mongoose';
 
 @Injectable()
 export class CategoryService {
-  constructor(private readonly categoryRepository: CategoryRepository) {}
+  constructor(private readonly categoryRepository: CategoryRepository) { }
   async create(category: Category) {
     const categoryExist = await this.categoryRepository.getOne({
       slug: category.slug,
@@ -20,8 +20,8 @@ export class CategoryService {
     return await this.categoryRepository.create(category);
   }
 
-  findAll() {
-    return `This action returns all category`;
+  async findAll() {
+    return await this.categoryRepository.getAll();
   }
 
   async findOne(id: string | Types.ObjectId) {
@@ -51,7 +51,9 @@ export class CategoryService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} category`;
+  async remove(id: string) {
+    const category = await this.categoryRepository.delete({ _id: id });
+    if (!category) throw new NotFoundException(MESSAGE.Category.notFound);
+    return category;
   }
 }

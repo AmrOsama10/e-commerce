@@ -33,9 +33,15 @@ export class BrandController {
     };
   }
 
+  @Public()
   @Get()
-  findAll() {
-    return this.brandService.findAll();
+  async findAll() {
+    const brands = await this.brandService.findAll();
+    return {
+      message: 'done',
+      success: true,
+      data: brands,
+    };
   }
 
   @Public()
@@ -69,7 +75,11 @@ export class BrandController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.brandService.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this.brandService.remove(id);
+    return {
+      message: MESSAGE.Brand.delete,
+      success: true,
+    };
   }
 }

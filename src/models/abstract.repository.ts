@@ -1,7 +1,7 @@
-import { Model, MongooseUpdateQueryOptions, ProjectionType, QueryOptions, RootFilterQuery, UpdateQuery } from "mongoose";
+import { Model, ProjectionType, QueryOptions, RootFilterQuery, UpdateQuery } from "mongoose";
 
 export class AbstractRepository<T> {
-  constructor(private readonly model: Model<T>) {}
+  constructor(private readonly model: Model<T>) { }
   public async create(item: Partial<T>) {
     const doc = new this.model(item);
     return doc.save();
@@ -20,5 +20,13 @@ export class AbstractRepository<T> {
     options?: QueryOptions,
   ) {
     return this.model.findOneAndUpdate(filter, update, options);
+  }
+
+  async getAll(filter?: RootFilterQuery<T>): Promise<T[]> {
+    return this.model.find(filter || {});
+  }
+
+  async delete(filter: RootFilterQuery<T>, options?: QueryOptions) {
+    return this.model.findOneAndDelete(filter, options);
   }
 }

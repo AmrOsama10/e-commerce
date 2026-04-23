@@ -1,10 +1,8 @@
+
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
+import { DiscountType } from '../../common/enum/discount-type';
 
-export enum DiscountType {
-  fixed_amount = 'fixed_amount',
-  percentage = 'percentage',
-}
 
 @Schema({ timestamps: true, toJSON: { virtuals: true } })
 export class Product {
@@ -39,15 +37,17 @@ export class Product {
   @Prop({
     type: String,
     enum: DiscountType,
-    default: DiscountType.fixed_amount,
+    default: DiscountType.fixed_amount
   })
-  discountType: DiscountType.fixed_amount;
+  discountType: DiscountType;
+
+
 
   @Virtual({
     get: function (this: Product) {
       if (this.discountType == DiscountType.fixed_amount)
-        return this.price - this.discountAmount;
-      return this.price - (this.price * this.discountAmount) / 100;
+        return this.price - this.discountAmount ;
+      return this.price - (this.price * this.discountAmount) / 100 ;
     },
   })
   finalPrice: number;

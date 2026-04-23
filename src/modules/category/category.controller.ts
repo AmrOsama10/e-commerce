@@ -41,8 +41,14 @@ export class CategoryController {
   }
 
   @Get()
-  findAll() {
-    return this.categoryService.findAll();
+  @Public()
+  async findAll() {
+    const categories = await this.categoryService.findAll();
+    return {
+      message: 'done',
+      success: true,
+      data: categories,
+    };
   }
 
   @Public()
@@ -76,7 +82,11 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.categoryService.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this.categoryService.remove(id);
+    return {
+      message: MESSAGE.Category.delete,
+      success: true,
+    };
   }
 }

@@ -1,18 +1,17 @@
+import { Auth, MESSAGE, Public, User } from '@common/index';
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  Put,
+  Get,
+  Param,
+  Post,
+  Put
 } from '@nestjs/common';
-import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductFactoryService } from './factory/index';
-import { Auth, MESSAGE, Public, User } from '@common/index';
+import { ProductService } from './product.service';
 
 @Controller('product')
 @Auth(['Admin', 'Seller'])
@@ -37,8 +36,14 @@ export class ProductController {
   }
 
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  @Public()
+  async findAll() {
+    const products = await this.productService.findAll();
+    return {
+      message: 'done',
+      success: true,
+      data: products,
+    };
   }
 
   @Get(':id')
@@ -52,11 +57,16 @@ export class ProductController {
   }
 
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
+  async update(@Param('id') id: string, @Body() product: UpdateProductDto) {
+   
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productService.remove(+id);
+  async remove(@Param('id') id: string) {
+    await this.productService.remove(id);
+    return {
+      message: MESSAGE.Product.delete,
+      success: true,
+    };
   }
 }

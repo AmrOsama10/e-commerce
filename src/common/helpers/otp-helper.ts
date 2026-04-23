@@ -9,10 +9,10 @@ export const generateOtpExpiry =()=>{
 }
 
 export const checkOtp = async (userExist: any, DTO: any) => {
-  if (DTO.otp != userExist.otp) {
-    throw new UnauthorizedException('invalid otp');
-  }
   if (new Date(Date.now()) > userExist.otpExpiry) {
     throw new BadRequestException('otp expiry');
+  }
+  if (DTO.otp != userExist.otp) {
+    throw new UnauthorizedException('invalid otp');
   }
 };

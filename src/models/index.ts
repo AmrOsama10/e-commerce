@@ -16,6 +16,15 @@ export * from './brand/brand.schema';
 export * from './product/product.repository';
 export * from './product/product.schema';
 
+export * from './coupon/coupon.repository';
+export * from './coupon/coupon.schema';
+
+export * from './cart/cart.repository';
+export * from './cart/cart.schema';
+
+export * from './order/order.repository';
+export * from './order/order.schema';
+
 export * from './common/index';
 
 

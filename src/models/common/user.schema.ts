@@ -24,7 +24,7 @@ export class User {
   @Prop({ type: String })
   otp: string;
 
-  @Prop({ type: Date })
+  @Prop({ type: Date }) 
   otpExpiry: Date;
 
   @Prop({ type: Boolean, default: false })

@@ -26,14 +26,14 @@ export class ProductService {
     return await this.ProductRepository.create(product);
   }
 
-  findAll() {
-    return `This action returns all product`;
+  async findAll() {
+    return await this.ProductRepository.getAll();
   }
 
-  async findOne(id: string) {
-    const productExist = await this.ProductRepository.getOne({_id:id})
-    if(!productExist) throw new NotFoundException(MESSAGE.Product.notFound)
-      return productExist
+  async findOne(id: string | Types.ObjectId) {
+    const productExist = await this.ProductRepository.getOne({ _id: id });
+    if (!productExist) throw new NotFoundException(MESSAGE.Product.notFound);
+    return productExist;
   }
 
   async update(id: string | Types.ObjectId, product: Product) {
@@ -45,7 +45,9 @@ export class ProductService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string | Types.ObjectId) {
+    const product = await this.ProductRepository.delete({ _id: id });
+    if (!product) throw new NotFoundException(MESSAGE.Product.notFound);
+    return product;
   }
 }
